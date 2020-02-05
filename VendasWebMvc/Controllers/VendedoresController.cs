@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -50,14 +51,14 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
 
             }
 
             var obj = _servicoVendedor.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
 
             }
 
@@ -77,14 +78,14 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
 
             }
 
             var obj = _servicoVendedor.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
 
             }
 
@@ -95,14 +96,14 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
 
             }
 
             var obj = _servicoVendedor.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             List<Departamento> departamentos = _servicoDepartamento.FindAll();
@@ -117,7 +118,7 @@ namespace VendasWebMvc.Controllers
         {
             if(id != vendedor.Id)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Ids não correspondem" });
 
             }
 
@@ -127,18 +128,28 @@ namespace VendasWebMvc.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
-            catch (NotFoundException)
+            catch (NotFoundException e)
             {
-                return NoContent();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
 
             }
 
-            catch (DbConcurrencyException)
+            catch (DbConcurrencyException e)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
 
             }
-
         }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+            return View(viewModel);
+        }
+
     }
 }

@@ -43,6 +43,7 @@ namespace VendasWebMvc
 
             services.AddScoped<SeedingService>();
             services.AddScoped<ServicoVendedor>();
+            services.AddScoped<ServicoDepartamento>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

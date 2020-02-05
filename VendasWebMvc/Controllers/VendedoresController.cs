@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using VendasWebMvc.Models;
 using VendasWebMvc.Models.ViewModels;
 using VendasWebMvc.Servicos;
+using VendasWebMvc.Servicos.Excecoes;
 
 namespace VendasWebMvc.Controllers
 {
@@ -88,6 +89,56 @@ namespace VendasWebMvc.Controllers
             }
 
             return View(obj);
+        }
+
+        public IActionResult Editar(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+
+            }
+
+            var obj = _servicoVendedor.FindById(id.Value);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            List<Departamento> departamentos = _servicoDepartamento.FindAll();
+            FormularioVendedorViewModel viewModel = new FormularioVendedorViewModel { Vendedor = obj, Departamentos = departamentos };
+            return View(viewModel);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Editar(int id, Vendedor vendedor)
+        {
+            if(id != vendedor.Id)
+            {
+                return BadRequest();
+
+            }
+
+            try
+            {
+                _servicoVendedor.Update(vendedor);
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (NotFoundException)
+            {
+                return NoContent();
+
+            }
+
+            catch (DbConcurrencyException)
+            {
+                return BadRequest();
+
+            }
+
         }
     }
 }

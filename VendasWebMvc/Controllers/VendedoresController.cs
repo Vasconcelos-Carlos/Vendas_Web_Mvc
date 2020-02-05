@@ -18,12 +18,14 @@ namespace VendasWebMvc.Controllers
         {
             _servicoVendedor = servicoVendedor;
             _servicoDepartamento = servicoDepartamento;
+
         }
 
         public IActionResult Index()
         {
             var listaVendedores = _servicoVendedor.FindAll();
             return View(listaVendedores);
+
         }
 
         public IActionResult Create()
@@ -31,6 +33,7 @@ namespace VendasWebMvc.Controllers
             var departamentos = _servicoDepartamento.FindAll();
             var viewModel = new FormularioVendedorViewModel { Departamentos = departamentos };
             return View(viewModel);
+
         }
 
         [HttpPost]
@@ -39,7 +42,34 @@ namespace VendasWebMvc.Controllers
         {
             _servicoVendedor.Iserir(vendedor);
             return RedirectToAction(nameof(Index));
+
         }
 
+        public IActionResult Delete (int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+
+            }
+
+            var obj = _servicoVendedor.FindById(id.Value);
+            if (obj == null)
+            {
+                return NotFound();
+
+            }
+
+            return View(obj);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            _servicoVendedor.Remove(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

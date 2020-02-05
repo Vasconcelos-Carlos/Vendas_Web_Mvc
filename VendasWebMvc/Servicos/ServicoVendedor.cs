@@ -21,6 +21,7 @@ namespace VendasWebMvc.Servicos
 
         public void Iserir(Vendedor obj)
         {
+            obj.Departamento = _context.Departamento.First();
             _context.Add(obj);
             _context.SaveChanges();
         }
